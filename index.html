@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160d27">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<title>SHAPING</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root{color-scheme:dark;--bg:#10091b;--panel:#211431;--muted:#b9a9cc;--green:#b36cff;--line:#49305f;--accent2:#6d3ca0;--text:#f7f1ff;--pill:#38234e;--tab:#2c1b3e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{margin:0;background:linear-gradient(160deg,var(--bg),#08060d 78%);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+main{max-width:620px;margin:auto;padding:22px 16px 40px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:27px;font-weight:900;letter-spacing:1px}
+.tag{font-size:11px;color:#a8b8cc;letter-spacing:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:17px;margin-top:15px;box-shadow:0 12px 35px #0003}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat small,.muted{color:var(--muted)}
+.stat strong{display:block;font-size:32px;margin-top:3px}
+h2{font-size:19px;margin:0 0 12px}
+h3{font-size:16px;margin:0 0 8px}
+.bar{height:10px;border-radius:20px;background:var(--tab);overflow:hidden;margin-top:8px}
+.bar span{display:block;height:100%;background:var(--green);width:0}
+button{border:0;border-radius:13px;padding:14px 16px;font-weight:750;font-size:15px;background:var(--green);color:#100817;width:100%;margin-top:10px;cursor:pointer}
+button.secondary{background:var(--tab);color:var(--text)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.item{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}
+.item span:last-child{color:var(--muted);white-space:nowrap}
+.lives{font-size:22px;letter-spacing:4px}
+.pill{display:inline-block;border-radius:30px;padding:5px 10px;background:var(--pill);color:var(--text);font-size:12px}
+.notice{font-size:13px;color:var(--muted);line-height:1.5}
+.tabs{display:flex;gap:8px;margin-top:15px}
+.tabs button{margin:0;padding:10px;background:var(--tab);color:var(--text)}
+.tabs button.active{background:var(--green);color:#100817}
+.hidden{display:none}
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.theme-choice small{display:block;color:var(--muted);font-size:11px;margin-top:5px}
+.store-note{font-size:12px;color:var(--muted);margin:8px 0}
+.theme-choice{border:1px solid var(--line);background:var(--tab);color:var(--text);padding:11px 9px;border-radius:12px;text-align:left;margin:0}
+.theme-choice.active{outline:2px solid var(--green);background:var(--panel)}
+.theme-dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.sound-dock{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel);box-shadow:0 5px 24px #0008}
+.sound-dock button{width:auto;margin:0;padding:7px 11px;font-size:12px;border-radius:999px}
+.sound-dock small{font-size:11px;color:var(--muted)}
+main{padding-bottom:88px}
+.store-view{transform-origin:50% 0}
+.store-view.store-enter{animation:storeEnter .62s cubic-bezier(.18,.8,.25,1) both}
+.store-view.store-enter .panel{animation:storeCard .55s both;animation-delay:calc(var(--i,0)*75ms)}
+@keyframes storeEnter{0%{opacity:0;transform:translateY(22px) scale(.97);filter:blur(5px)}70%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none}}
+@keyframes storeCard{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:none}}
+.store-hero{position:relative;overflow:hidden;background:linear-gradient(120deg,var(--panel),var(--tab))}
+.store-hero:after{content:"✦  ✧  ✦";position:absolute;right:12px;top:12px;color:var(--green);font-size:24px;opacity:.75;animation:sparkle 2s ease-in-out infinite}
+@keyframes sparkle{0%,100%{opacity:.35;transform:scale(.85) rotate(-8deg)}50%{opacity:1;transform:scale(1.12) rotate(8deg)}}
+.store-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.store-item{background:var(--tab);border:1px solid var(--line);border-radius:15px;padding:12px;min-width:0}
+.store-item .preview{font-size:27px;margin-bottom:5px;animation:floatItem 2.6s ease-in-out infinite}
+.store-item p{font-size:12px;color:var(--muted);min-height:32px;margin:5px 0}
+.store-item button{padding:10px 8px;font-size:13px;margin-top:6px}
+.store-item.owned{box-shadow:0 0 18px color-mix(in srgb,var(--green) 30%,transparent)}
+@keyframes floatItem{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+body.glow-buttons button{box-shadow:0 0 15px color-mix(in srgb,var(--green) 55%,transparent)}
+body.sparkle-ui .brand{text-shadow:0 0 12px var(--green)}
+body.fire-ui .brand:after{content:' ✦';color:var(--green);animation:sparkle 1.4s infinite}
+.profile-frame{outline:3px solid var(--green);outline-offset:3px;box-shadow:0 0 18px var(--green)}
+.pulse-card{box-shadow:0 0 20px color-mix(in srgb,var(--green) 18%,transparent),0 12px 35px #0003}
+.footer{text-align:center;color:#71839c;font-size:12px;margin-top:22px}
+.camera-box{position:relative;width:100%;aspect-ratio:4/5;max-height:520px;background:#05030a;border-radius:18px;overflow:hidden;border:1px solid #8d4cff;box-shadow:0 0 24px #8d4cff55}
+.camera-box video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.camera-box canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1)}
+.rep-hud{position:absolute;left:0;right:0;bottom:14px;text-align:center;pointer-events:none;text-shadow:0 3px 12px #000}
+.rep-hud strong{display:block;color:#30ff72;font:900 clamp(58px,17vw,92px) 'Orbitron',system-ui;line-height:1;filter:drop-shadow(0 0 14px #00ff55)}
+.rep-hud span{color:#fff;font:700 12px 'Orbitron',system-ui;letter-spacing:4px}
+.camera-status{font-size:13px;color:var(--muted);margin:9px 0}
+.store-view,.store-view button,.store-view h2,.store-view b{font-family:'Orbitron','Rajdhani',system-ui,sans-serif;letter-spacing:.25px}
+.store-item b{font-family:'Rajdhani','Orbitron',system-ui,sans-serif;font-size:16px;font-weight:700;letter-spacing:.45px}
+.store-item button{font-family:'Orbitron',system-ui,sans-serif;font-size:11px;letter-spacing:.5px}
+.store-item{position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.store-item:before{content:'';position:absolute;inset:-80% -30%;background:linear-gradient(115deg,transparent 42%,color-mix(in srgb,var(--green) 18%,transparent) 50%,transparent 58%);transform:translateX(-75%);animation:shopShine 5s ease-in-out infinite;pointer-events:none}
+@keyframes shopShine{0%,55%,100%{transform:translateX(-75%)}75%{transform:translateX(75%)}}
+.store-item:active{transform:scale(.97)}
+.swipe-wrap{margin-top:14px;padding:8px;border:1px solid var(--line);border-radius:18px;background:var(--tab);position:relative;overflow:hidden;touch-action:pan-y}
+.swipe-track{height:54px;border-radius:13px;background:linear-gradient(90deg,color-mix(in srgb,var(--green) 28%,var(--tab)),var(--tab));display:flex;align-items:center;padding:5px;position:relative}
+.swipe-label{position:absolute;inset:0;display:grid;place-items:center;font:700 12px 'Orbitron',system-ui;letter-spacing:1px;color:var(--text);pointer-events:none;text-align:center}
+.swipe-thumb{width:46px;height:44px;border-radius:11px;background:var(--green);color:#100817;display:grid;place-items:center;font-size:23px;box-shadow:0 0 22px var(--green);z-index:1;touch-action:none;user-select:none;transition:box-shadow .2s}
+.swipe-thumb.dragging{box-shadow:0 0 30px var(--green),0 0 55px var(--green)}
+.calendar-toggle{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:grab;touch-action:pan-y}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}
+.calendar-cell{min-height:47px;border-radius:11px;background:var(--tab);display:grid;place-items:center;position:relative;font:700 12px 'Rajdhani',system-ui;border:1px solid var(--line)}
+.calendar-cell small{font-size:9px;color:var(--muted)}
+.calendar-cell.done{background:color-mix(in srgb,#ff7a25 18%,var(--tab));border-color:#ff8a35;box-shadow:0 0 13px #ff7a3540}
+.calendar-cell.done:after{content:'🔥';position:absolute;font-size:11px;right:1px;top:-7px;animation:orbitFire 2.1s linear infinite;transform-origin:-8px 17px}
+.calendar-cell.missed{background:linear-gradient(145deg,#16354b,#102333);border-color:#63c9f4;box-shadow:inset 0 0 13px #6bd8ff25}
+.calendar-cell.missed:after{content:'❄️';position:absolute;right:1px;top:-7px;font-size:10px;animation:iceSpin 4s linear infinite}
+.calendar-cell.today{outline:2px solid var(--green);outline-offset:1px}
+.calendar-cell.empty{background:transparent;border:0}
+.calendar-head{font-size:10px;color:var(--muted);padding:4px 0}
+.calendar-enter{animation:calendarIn .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes calendarIn{from{opacity:0;transform:translateY(-16px) scale(.96);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes orbitFire{to{transform:rotate(360deg)}}
+@keyframes iceSpin{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.15)}}
+.reward-overlay{position:fixed;inset:0;z-index:100;background:#08040deF;display:grid;place-items:center;padding:24px;animation:rewardFade .3s both}
+.reward-card{width:min(420px,100%);text-align:center;border:1px solid var(--green);border-radius:26px;padding:28px 20px;background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--green) 28%,var(--panel)),var(--panel) 68%);box-shadow:0 0 60px color-mix(in srgb,var(--green) 35%,transparent);animation:rewardPop .65s cubic-bezier(.15,.85,.25,1.2) both}
+.reward-fire{font-size:64px;animation:rewardFlame .8s ease-in-out infinite alternate}
+.reward-card h2{font:900 24px 'Orbitron',system-ui;letter-spacing:1px}
+.reward-card p{color:var(--muted)}
+@keyframes rewardFade{from{opacity:0}to{opacity:1}}
+@keyframes rewardPop{from{transform:scale(.55) rotate(-7deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes rewardFlame{to{transform:translateY(-8px) scale(1.12);filter:drop-shadow(0 0 18px #ff8a35)}}
+.milestone-bottom{margin-top:18px}
+.milestone-bottom .stat{border:1px solid var(--line);border-radius:13px;padding:10px;background:var(--tab)}
+body.aurora-ui main{background:radial-gradient(ellipse at 10% 10%,color-mix(in srgb,var(--green) 13%,transparent),transparent 45%)}
+body.crystal-ui .panel{backdrop-filter:blur(12px);border-color:color-mix(in srgb,var(--green) 55%,var(--line))}
+body.neon-font-ui .brand,body.neon-font-ui h2{font-family:'Orbitron',system-ui;text-shadow:0 0 12px var(--green)}
+body.comet-ui .brand:after{content:' ☄';display:inline-block;animation:cometFly 2.8s ease-in-out infinite}
+@keyframes cometFly{0%,100%{transform:translate(0,0) rotate(-15deg);opacity:.45}50%{transform:translate(7px,-5px) rotate(10deg);opacity:1}}
+body.frost-ui .calendar-cell.missed{box-shadow:inset 0 0 18px #8ce7ff66,0 0 10px #8ce7ff33}
+body.orbit-ui #diamondCount{display:inline-block;animation:diamondOrbit 2.6s ease-in-out infinite}
+@keyframes diamondOrbit{50%{transform:translateY(-4px) rotateY(18deg);text-shadow:0 0 16px var(--green)}}
+body.shockwave-ui .reward-card{animation:rewardPop .65s cubic-bezier(.15,.85,.25,1.2) both,shockwave 1.5s .4s ease-out infinite}
+@keyframes shockwave{50%{box-shadow:0 0 0 12px color-mix(in srgb,var(--green) 9%,transparent),0 0 65px color-mix(in srgb,var(--green) 50%,transparent)}}
+main.app-enter>.top{animation:appDrop .65s cubic-bezier(.18,.8,.25,1) both}
+main.app-enter>section,main.app-enter>.tabs{animation:appRise .6s both}
+main.app-enter>section:nth-of-type(2){animation-delay:70ms}
+main.app-enter>.tabs{animation-delay:120ms}
+@keyframes appDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes appRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<main>
+ <div class="top"><div style="display:flex;align-items:center;gap:10px"><img id="brandLogo" src="icon-192.png" alt="SHAPING logo" width="58" height="58" style="border-radius:14px"><div><div class="brand">SHAPING</div><div class="tag">YOUR 999-DAY CHALLENGE</div></div></div><span class="pill" id="dateLabel"></span></div>
+ <section class="panel">
+  <div class="stats">
+   <div class="stat"><small>🔥 CURRENT DAY</small><strong id="dayNum">1</strong><small>of 999 days</small></div>
+   <div class="stat"><small>🔥 FIRE LIVES</small><strong class="lives" id="lives">🔥🔥</strong><small>Two lives</small></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:18px"><b>Challenge progress</b><small class="muted" id="percent">0.1%</small></div>
+  <div class="bar"><span id="progress"></span></div>
+ </section>
+ <section class="panel"><div class="stats"><div class="stat"><small>💎 DIAMONDS</small><strong id="diamondCount">20</strong></div><div class="stat"><small>✅ WORKOUT DAYS</small><strong id="workoutCount">2</strong></div></div></section>
+ <div class="tabs"><button id="todayTab" class="active">Today</button><button id="weekTab" class="secondary">Weekly plan</button><button id="storeTab" class="secondary">💎 Store</button></div>
+ <section class="panel" id="todayView">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h2 id="workoutTitle">Today's workout</h2><span class="pill" id="dayType"></span></div>
+  <p class="notice" id="workoutNote"></p>
+  <div id="exerciseList"></div>
+  <div class="swipe-wrap" id="completeSwipe" aria-label="Swipe to complete workout"><div class="swipe-track"><div class="swipe-label" id="swipeLabel">SWIPE TO COMPLETE WORKOUT →</div><div class="swipe-thumb" id="swipeThumb">➜</div></div></div>
+  <button id="completeBtn" class="secondary" style="display:none">Mark today's workout complete ✓</button>
+  <button id="busyBtn" class="secondary">Show quick version</button>
+  <button id="openCounterBtn">🟢 Open automatic push-up counter</button>
+  <section id="counterPanel" class="panel hidden" style="margin-top:12px;padding:12px">
+   <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">AI PUSH-UP COUNTER</h2><span class="pill">LIVE TRACKING</span></div>
+   <p class="notice">Place your phone so your full upper body and arms are visible. The counter detects the down-and-up movement automatically.</p>
+   <div class="camera-box"><video id="counterVideo" playsinline muted></video><canvas id="poseCanvas"></canvas><div class="rep-hud"><strong id="repCount">0</strong><span>REPS</span></div></div>
+   <p class="camera-status" id="counterStatus" aria-live="polite">Camera is off.</p>
+   <div class="stats"><button id="startCounterBtn">START CAMERA</button><button id="stopCounterBtn" class="secondary">STOP</button></div>
+   <button id="resetCounterBtn" class="secondary">RESET COUNT</button>
+  </section>
+  <p class="notice" id="statusText" aria-live="polite"></p>
+ </section>
+ <section class="panel hidden" id="weekView">
+  <h2>Your weekly workout plan</h2><div id="weekList"></div>
+  <p class="notice">Keep the effort comfortable and use good form. Sunday is a rest day; it automatically counts as a recovery day.</p>
+ </section>
+ <section class="panel" id="calendarPanel">
+  <div class="calendar-toggle" id="calendarToggle"><div><h2 style="margin:0">📅 Workout calendar</h2><small class="muted">Swipe sideways here to reveal your history</small></div><span class="pill" id="calendarHint">SWIPE →</span></div>
+  <div id="calendarBody" class="hidden" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><button class="secondary" id="prevMonth" style="width:auto;margin:0;padding:8px 13px">‹</button><b id="calendarMonth" style="font-family:'Orbitron',system-ui"></b><button class="secondary" id="nextMonth" style="width:auto;margin:0;padding:8px 13px">›</button></div><div class="calendar-grid" id="calendarGrid"></div><p class="notice">🔥 Completed workout · ❄️ Missed workout · Purple outline = today</p></div>
+ </section>
+ <section id="storeView" class="hidden store-view">
+  <section class="panel store-hero" style="--i:0"><h2>💎 SHAPING STORE</h2><p class="notice">Unlock themes, visual effects and extras with diamonds. Your purchases stay saved on this device.</p><div class="pill">YOUR BALANCE: <b id="storeBalance">20</b> 💎</div></section>
+  <section class="panel" style="--i:2"><h2>✨ Effects & upgrades</h2><div class="store-items" id="storeItems">
+   <div class="store-item" data-item="glow"><div class="preview">🌟</div><b>Neon Button Aura</b><p>Glowing aura around buttons, matching your selected theme.</p><button data-buy="glow">40 💎</button></div>
+   <div class="store-item" data-item="sparkle"><div class="preview">💎</div><b>Diamond Sparkle</b><p>Subtle sparkle styling and a glowing brand accent.</p><button data-buy="sparkle">40 💎</button></div>
+   <div class="store-item" data-item="fire"><div class="preview">🔥</div><b>Fire Signature</b><p>Animated fiery-style accent for your SHAPING title.</p><button data-buy="fire">50 💎</button></div>
+   <div class="store-item" data-item="frame"><div class="preview">🛡️</div><b>Elite Profile Frame</b><p>A bright theme-coloured frame around your app logo.</p><button data-buy="frame">40 💎</button></div>
+   <div class="store-item" data-item="sound"><div class="preview">🎵</div><b>Power Sound Pack</b><p>Unlocks the stronger celebration sound profile.</p><button data-buy="sound">50 💎</button></div>
+   <div class="store-item" data-item="cards"><div class="preview">⚡</div><b>Pulse Cards</b><p>Extra glowing workout cards and stat panels.</p><button data-buy="cards">50 💎</button></div>
+   <div class="store-item" data-item="comet"><div class="preview">☄️</div><b>Comet Trail</b><p>A moving comet streak follows your active controls.</p><button data-buy="comet">50 💎</button></div>
+   <div class="store-item" data-item="aurora"><div class="preview">🌌</div><b>Aurora Atmosphere</b><p>Animated aurora glow behind the app panels.</p><button data-buy="aurora">70 💎</button></div>
+   <div class="store-item" data-item="flameburst"><div class="preview">🔥</div><b>Inferno Burst</b><p>Extra fire burst effects on workout completion.</p><button data-buy="flameburst">100 💎</button></div>
+   <div class="store-item" data-item="crystal"><div class="preview">💠</div><b>Crystal UI</b><p>Shimmering glass-style cards and borders.</p><button data-buy="crystal">70 💎</button></div>
+   <div class="store-item" data-item="victory"><div class="preview">🏆</div><b>Victory Anthem</b><p>Unlocks an extended victory sound sequence.</p><button data-buy="victory">100 💎</button></div>
+   <div class="store-item" data-item="orbit"><div class="preview">🪐</div><b>Orbiting Diamonds</b><p>Animated diamond orbit around your balance.</p><button data-buy="orbit">50 💎</button></div>
+   <div class="store-item" data-item="frost"><div class="preview">❄️</div><b>Frosted Missed Days</b><p>Enhanced frozen calendar effect for missed days.</p><button data-buy="frost">40 💎</button></div>
+   <div class="store-item" data-item="neonfont"><div class="preview">🔠</div><b>Neon Typography</b><p>Extra futuristic typography and animated lettering.</p><button data-buy="neonfont">70 💎</button></div>
+   <div class="store-item" data-item="shockwave"><div class="preview">💥</div><b>Completion Shockwave</b><p>A glowing shockwave expands when you finish.</p><button data-buy="shockwave">100 💎</button></div>
+  </div></section>
+  <section class="panel" style="--i:3"><h2>🛍️ Your collection</h2><p class="notice" id="collectionText">No extras unlocked yet. Pick an upgrade above.</p></section>
+  <section class="panel" id="themesPanel" style="--i:1">
+   <h2>🎨 App themes</h2><p class="notice">Choose a template to recolour the whole app — backgrounds, cards, buttons, tabs, progress and text.</p>
+   <div class="theme-grid" id="themeGrid">
+    <button class="theme-choice" data-theme="purple"><span class="theme-dot" style="background:#b36cff"></span>Purple Night<small>FREE • Unlocked</small></button>
+    <button class="theme-choice" data-theme="ember"><span class="theme-dot" style="background:#ff8547"></span>Ember<small>50 💎</small></button>
+    <button class="theme-choice" data-theme="ocean"><span class="theme-dot" style="background:#35bde8"></span>Ocean<small>50 💎</small></button>
+    <button class="theme-choice" data-theme="emerald"><span class="theme-dot" style="background:#43d69a"></span>Emerald<small>70 💎</small></button>
+    <button class="theme-choice" data-theme="crimson"><span class="theme-dot" style="background:#ff5478"></span>Crimson<small>70 💎</small></button>
+    <button class="theme-choice" data-theme="mono"><span class="theme-dot" style="background:#d1d5db"></span>Stealth<small>50 💎</small></button>
+    <button class="theme-choice" data-theme="ice"><span class="theme-dot" style="background:#8ce7ff"></span>Arctic Ice<small>100 💎</small></button>
+    <button class="theme-choice" data-theme="gold"><span class="theme-dot" style="background:#f2c45c"></span>Royal Gold<small>100 💎</small></button>
+   </div>
+  </section>
+ </section>
+ <section class="panel milestone-bottom"><h2>🏆 Milestones</h2><div id="milestones" class="stats"></div></section>
+ <div class="sound-dock"><small>🔊 SOUND</small><button id="soundToggle" class="secondary" aria-label="Toggle sound">ON</button></div>
+ <p class="footer">Progress is saved on this device. SHAPING • 999-day challenge</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+<script>
+const START='2026-11-11';
+const plan=[
+ {day:'Monday',type:'Strength',items:['Push-ups — 2 × 6–12','Squats — 2 × 12','Reverse lunges — 2 × 8 each leg','Plank — 2 × 20–30 sec','Calf raises — 2 × 15','Glute bridges — 2 × 12','Bird dogs — 2 × 10 each side'],quick:['Push-ups — 8','Squats — 15','Reverse lunges — 5 each leg','Plank — 20 sec','Glute bridges — 10']},
+ {day:'Tuesday',type:'Cardio',items:['Easy jogging or brisk walking — 10–15 min','Gentle mobility — 3 min'],quick:['Jumping jacks — 30 sec','High knees — 30 sec','Marching — 1 min','Easy jogging — 2 min']},
+ {day:'Wednesday',type:'Strength',items:['Push-ups — 2 × 6–12','Squats — 2 × 12','Reverse lunges — 2 × 8 each leg','Plank — 2 × 20–30 sec','Calf raises — 2 × 15','Glute bridges — 2 × 12','Bird dogs — 2 × 10 each side'],quick:['Push-ups — 8','Squats — 12','Plank — 20 sec']},
+ {day:'Thursday',type:'Active recovery',items:['Easy walk — 10 min','Gentle full-body stretching — 5 min'],quick:['Easy walk — 5 min','Gentle stretching — 2 min']},
+ {day:'Friday',type:'Strength',items:['Push-ups — 2 × 6–12','Squats — 2 × 12','Reverse lunges — 2 × 8 each leg','Plank — 2 × 20–30 sec','Calf raises — 2 × 15','Glute bridges — 2 × 12','Bird dogs — 2 × 10 each side'],quick:['Push-ups — 8','Squats — 15','Reverse lunges — 5 each leg','Plank — 20 sec','Glute bridges — 10']},
+ {day:'Saturday',type:'Rest / recovery',items:['Rest and recover','Optional relaxed walk or gentle play'],quick:['Rest and recover']},
+ {day:'Sunday',type:'Rest',items:['Rest and recover','Optional relaxed walk'],quick:['Rest and recover']}
+];
+const $=id=>document.getElementById(id);
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const dateAt=(s)=>new Date(s+'T12:00:00');
+const diffDays=(a,b)=>Math.floor((dateAt(b)-dateAt(a))/86400000);
+let data;
+try{data=JSON.parse(localStorage.getItem('fit999')||'null')}catch(e){data=null}
+data=data&&typeof data==='object'?data:{lives:2,completed:[],missed:[],lastSeen:todayISO()};
+if(!Array.isArray(data.completed))data.completed=[];
+if(!Array.isArray(data.missed))data.missed=[];
+if(typeof data.lives!=='number')data.lives=2;
+if(typeof data.diamonds!=='number')data.diamonds=20;
+if(typeof data.completedWorkoutDays!=='number')data.completedWorkoutDays=Math.max(2,data.completed.length);
+if(!data.theme)data.theme='purple';
+if(!Array.isArray(data.unlockedThemes))data.unlockedThemes=['purple'];
+if(!Array.isArray(data.storeOwned))data.storeOwned=[];
+if(!data.unlockedThemes.includes('purple'))data.unlockedThemes.push('purple');
+if(data.theme&&!data.unlockedThemes.includes(data.theme))data.unlockedThemes.push(data.theme);
+function save(){localStorage.setItem('fit999',JSON.stringify(data))}
+function dayIndex(date){return (dateAt(date).getDay()+6)%7}
+function challengeDay(){return Math.max(1,Math.min(999,diffDays(START,todayISO())+1))}
+const themes={
+ purple:{bg:'#10091b',panel:'#211431',muted:'#b9a9cc',accent:'#b36cff',line:'#49305f',tab:'#2c1b3e',pill:'#38234e',text:'#f7f1ff',deep:'#08060d'},
+ ember:{bg:'#1b0d08',panel:'#30180f',muted:'#d6b4a2',accent:'#ff8547',line:'#70402b',tab:'#492719',pill:'#5b3020',text:'#fff4ed',deep:'#090504'},
+ ocean:{bg:'#07141d',panel:'#102a38',muted:'#a8c7d5',accent:'#35bde8',line:'#24566a',tab:'#173c4d',pill:'#204e62',text:'#effaff',deep:'#040a10'},
+ emerald:{bg:'#071810',panel:'#10291d',muted:'#a9cbb8',accent:'#43d69a',line:'#285b43',tab:'#193e2c',pill:'#23543b',text:'#effff5',deep:'#030a06'},
+ crimson:{bg:'#1b0810',panel:'#30111e',muted:'#d5a9b7',accent:'#ff5478',line:'#6c2940',tab:'#481b2d',pill:'#592238',text:'#fff0f4',deep:'#090307'},
+ mono:{bg:'#101114',panel:'#22242a',muted:'#b8bbc3',accent:'#d1d5db',line:'#484b54',tab:'#30333b',pill:'#3c404a',text:'#f7f7f8',deep:'#070708'},
+ ice:{bg:'#071923',panel:'#103044',muted:'#b0d8e8',accent:'#8ce7ff',line:'#28617a',tab:'#17465c',pill:'#20536b',text:'#f0fbff',deep:'#030b12'},
+ gold:{bg:'#1b1508',panel:'#30250f',muted:'#dfcea2',accent:'#f2c45c',line:'#6e5725',tab:'#493919',pill:'#5b4821',text:'#fff8e7',deep:'#090704'}
+};
+function applyTheme(name){
+ const t=themes[name]||themes.purple,r=document.documentElement.style;
+ for(const [k,v] of Object.entries({bg:t.bg,panel:t.panel,muted:t.muted,green:t.accent,line:t.line,tab:t.tab,pill:t.pill,text:t.text}))r.setProperty('--'+k,v);
+ document.body.style.background=`linear-gradient(160deg,${t.bg},${t.deep} 78%)`;
+ document.querySelector('meta[name="theme-color"]').content=t.bg;
+ document.querySelectorAll('.theme-choice').forEach(b=>b.classList.toggle('active',b.dataset.theme===name));
+ data.theme=name;
+ document.querySelectorAll('.store-item').forEach(el=>el.style.borderColor=t.line);
+ save();
+}
+let soundEnabled=data.soundEnabled!==false,audioCtx=null;
+function playTone(kind='tap'){
+ if(!soundEnabled)return;
+ try{
+  audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  const now=audioCtx.currentTime;
+  const seq=kind==='complete'?[[523,0],[659,.12],[784,.24],[1046,.38]]:kind==='milestone'?[[440,0],[554,.13],[659,.26],[880,.39]]:kind==='rep'?[[880,0],[1175,.07]]:[[kind==='toggle'?660:480,0]];
+  seq.forEach(([freq,delay])=>{
+   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+   o.type='triangle';o.frequency.value=freq;
+   g.gain.setValueAtTime(.0001,now+delay);
+   g.gain.exponentialRampToValueAtTime(data.storeOwned&&data.storeOwned.includes('sound')?.95:.82,now+delay+.015);
+   g.gain.exponentialRampToValueAtTime(.0001,now+delay+.22);
+   o.connect(g);g.connect(audioCtx.destination);o.start(now+delay);o.stop(now+delay+.24);
+  });
+ }catch(e){}
+}
+const themeCosts={purple:0,ember:50,ocean:50,emerald:70,crimson:70,mono:50,ice:100,gold:100};
+function paintThemeChoices(){
+ document.querySelectorAll('.theme-choice').forEach(b=>{
+  const key=b.dataset.theme,owned=data.unlockedThemes.includes(key),cost=themeCosts[key],small=b.querySelector('small');
+  if(small)small.textContent=owned?(data.theme===key?'SELECTED ✓':'UNLOCKED ✓'):(cost+' 💎');
+  b.classList.toggle('active',data.theme===key);
+ });
+}
+$('themeGrid').addEventListener('click',e=>{
+ const b=e.target.closest('[data-theme]');if(!b)return;
+ const key=b.dataset.theme,cost=themeCosts[key]||0;
+ if(!data.unlockedThemes.includes(key)){
+  if((data.diamonds||0)<cost){$('statusText').textContent='Not enough diamonds for this theme yet.';playTone('tap');return}
+  data.diamonds-=cost;data.unlockedThemes.push(key);
+ }
+ applyTheme(key);$('diamondCount').textContent=data.diamonds;paintThemeChoices();playTone('milestone');
+});
+$('soundToggle').textContent=soundEnabled?'ON':'OFF';
+$('soundToggle').onclick=()=>{
+ soundEnabled=!soundEnabled;data.soundEnabled=soundEnabled;save();
+ $('soundToggle').textContent=soundEnabled?'ON':'OFF';if(soundEnabled)playTone('toggle');
+};
+function render(){
+ const now=todayISO(),d=challengeDay(),idx=dayIndex(now),w=plan[idx],isRest=idx>=5;
+ $('dateLabel').textContent=dateAt(now).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+ $('dayNum').textContent=d;
+ $('lives').textContent='🔥'.repeat(data.lives)+'▫️'.repeat(2-data.lives);
+ $('diamondCount').textContent=data.diamonds;
+ $('workoutCount').textContent=data.completedWorkoutDays;
+ if($('storeBalance'))$('storeBalance').textContent=data.diamonds;
+ const pct=Math.min(100,d/999*100);
+ $('percent').textContent=pct.toFixed(1)+'%';$('progress').style.width=pct+'%';
+ $('workoutTitle').textContent=w.day+' workout';$('dayType').textContent=w.type;
+ $('workoutNote').textContent=isRest?'Rest day: recovery is part of training. Your streak continues automatically.':'Choose the regular routine or the quick version when you\'re short on time.';
+ renderItems(w.items);
+ $('completeBtn').disabled=isRest||data.completed.includes(now)||data.lives===0;
+ swipeTrack.classList.toggle('disabled',isRest||data.completed.includes(now)||data.lives===0);
+ swipeLabel.textContent=isRest?'REST DAY — RECOVER':data.completed.includes(now)?'WORKOUT COMPLETED ✓':data.lives===0?'CHALLENGE PAUSED':'SWIPE TO COMPLETE WORKOUT →';
+ swipeThumb.style.opacity=(isRest||data.completed.includes(now)||data.lives===0)?'.35':'1';
+ $('completeBtn').textContent=data.completed.includes(now)?'Completed today ✓':data.lives===0?'Challenge paused — no lives left':'Mark today complete ✓';
+ $('statusText').textContent=isRest?'Rest day recorded automatically.':data.completed.includes(now)?'Nice work! Your day is recorded on this device.':'';
+ $('milestones').innerHTML=[7,30,100,365,500,999].map(n=>`<div class="stat"><small>${d>=n?'🏆 UNLOCKED':'🔒 LOCKED'}</small><strong style="font-size:20px">${n}</strong><small>days</small></div>`).join('');
+ $('weekList').innerHTML=plan.map(p=>`<div class="item"><b>${p.day}</b><span>${p.type}</span></div>`).join('');
+}
+function renderItems(items){$('exerciseList').innerHTML=items.map(x=>`<div class="item"><span>${x}</span></div>`).join('')}
+function finishWorkout(){
+ const now=todayISO();
+ if(data.completed.includes(now)||dayIndex(now)>=5||data.lives===0)return;
+ data.completed.push(now);data.missed=data.missed.filter(x=>x!==now);
+ data.completedWorkoutDays=Math.max(data.completedWorkoutDays+1,data.completed.length);
+ data.diamonds=(data.diamonds||0)+5;save();playTone('complete');render();showReward();
+}
+const swipeTrack=$('completeSwipe'),swipeThumb=$('swipeThumb'),swipeLabel=$('swipeLabel');
+let dragging=false,startX=0,offsetX=0;
+function setSwipe(x){
+ const max=swipeTrack.querySelector('.swipe-track').clientWidth-swipeThumb.clientWidth-10;
+ offsetX=Math.max(0,Math.min(max,x));swipeThumb.style.transform=`translateX(${offsetX}px)`;
+ if(offsetX>=max*.88){finishWorkout();resetSwipe()}
+}
+function resetSwipe(){
+ dragging=false;offsetX=0;swipeThumb.style.transition='transform .35s';
+ swipeThumb.style.transform='translateX(0)';setTimeout(()=>swipeThumb.style.transition='',360);
+}
+swipeThumb.addEventListener('pointerdown',e=>{
+ if(swipeThumb.closest('.swipe-wrap').classList.contains('disabled'))return;
+ dragging=true;startX=e.clientX-offsetX;swipeThumb.classList.add('dragging');swipeThumb.setPointerCapture(e.pointerId);
+});
+swipeThumb.addEventListener('pointermove',e=>{if(dragging){e.preventDefault();setSwipe(e.clientX-startX)}});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>swipeThumb.addEventListener(ev,()=>{
+ if(dragging){
+  dragging=false;swipeThumb.classList.remove('dragging');
+  if(offsetX<swipeTrack.querySelector('.swipe-track').clientWidth-swipeThumb.clientWidth-18)resetSwipe();
+ }
+}));
+function showReward(){
+ const overlay=document.createElement('div');overlay.className='reward-overlay';
+ overlay.innerHTML=`<div class="reward-card"><div class="reward-fire">🔥💎🔥</div><h2>WORKOUT COMPLETE</h2><p>+5 DIAMONDS · DAY ${challengeDay()} RECORDED</p><button id="rewardClose">CLAIM REWARD</button></div>`;
+ document.body.appendChild(overlay);
+ overlay.querySelector('#rewardClose').onclick=()=>{overlay.remove();showSection('storeView')};
+}
+function syncMissed(){
+ const today=todayISO(),from=data.lastSeen||today;
+ for(let i=Math.max(0,diffDays(START,from)+1);i<Math.min(999,diffDays(START,today));i++){
+  const d=new Date(dateAt(START).getTime()+i*86400000);
+  const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  if(d.getDay()!==0&&d.getDay()!==6&&!data.completed.includes(iso)&&!data.missed.includes(iso))data.missed.push(iso);
+ }
+ data.lastSeen=today;save();
+}
+let calendarDate=new Date();
+function renderCalendar(){
+ const y=calendarDate.getFullYear(),m=calendarDate.getMonth();
+ $('calendarMonth').textContent=calendarDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+ const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+ let html=['S','M','T','W','T','F','S'].map(x=>`<div class="calendar-head">${x}</div>`).join('');
+ for(let i=0;i<first;i++)html+='<div class="calendar-cell empty"></div>';
+ for(let n=1;n<=days;n++){
+  const d=new Date(y,m,n),iso=`${y}-${String(m+1).padStart(2,'0')}-${String(n).padStart(2,'0')}`,done=data.completed.includes(iso),miss=data.missed.includes(iso);
+  html+=`<div class="calendar-cell ${done?'done':miss?'missed':''} ${iso===todayISO()?'today':''}">${n}<small>${done?'DONE':miss?'MISSED':''}</small></div>`;
+ }
+ $('calendarGrid').innerHTML=html;
+}
+$('calendarToggle').addEventListener('click',()=>{
+ const b=$('calendarBody');b.classList.toggle('hidden');
+ if(!b.classList.contains('hidden')){
+  b.classList.remove('calendar-enter');void b.offsetWidth;b.classList.add('calendar-enter');renderCalendar();$('calendarHint').textContent='HIDE ↑';
+ }else $('calendarHint').textContent='SWIPE →';
+ playTone('milestone');
+});
+let calStart=0;
+$('calendarToggle').addEventListener('touchstart',e=>calStart=e.touches[0].clientX,{passive:true});
+$('calendarToggle').addEventListener('touchend',e=>{
+ const dx=e.changedTouches[0].clientX-calStart;
+ if(Math.abs(dx)>45){
+  e.preventDefault();const b=$('calendarBody');
+  if(b.classList.contains('hidden')){
+   b.classList.remove('hidden');b.classList.remove('calendar-enter');void b.offsetWidth;b.classList.add('calendar-enter');$('calendarHint').textContent='HIDE ↑';renderCalendar();
+  }else{b.classList.add('hidden');$('calendarHint').textContent='SWIPE →'}
+  playTone('milestone');
+ }
+},{passive:false});
+$('prevMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()};
+$('nextMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()};
+let quickMode=false;
+$('busyBtn').onclick=()=>{
+ playTone('tap');const w=plan[dayIndex(todayISO())];quickMode=!quickMode;
+ renderItems(quickMode?w.quick:w.items);
+ $('workoutNote').textContent=quickMode?'Quick version — keep it easy and controlled.':'Choose the regular routine or the quick version when you\'re short on time.';
+ $('busyBtn').textContent=quickMode?'Show regular workout':'Show quick version';
+};
+function showSection(which){
+ ['todayView','weekView','storeView'].forEach(id=>$(id).classList.toggle('hidden',id!==which));
+ [['todayTab','todayView'],['weekTab','weekView'],['storeTab','storeView']].forEach(([id,view])=>{
+  const active=view===which;$(id).classList.toggle('active',active);$(id).classList.toggle('secondary',!active);
+ });
+ if(which==='storeView'){
+  const v=$('storeView');v.classList.remove('store-enter');void v.offsetWidth;v.classList.add('store-enter');playTone('milestone');paintStore();
+ }else playTone('tap');
+}
+$('todayTab').onclick=()=>showSection('todayView');
+$('weekTab').onclick=()=>showSection('weekView');
+$('storeTab').onclick=()=>showSection('storeView');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+const storeCosts={glow:40,sparkle:40,fire:50,frame:40,sound:50,cards:50,comet:50,aurora:70,flameburst:100,crystal:70,victory:100,orbit:50,frost:40,neonfont:70,shockwave:100};
+const storeNames={glow:'Neon Button Aura',sparkle:'Diamond Sparkle',fire:'Fire Signature',frame:'Elite Profile Frame',sound:'Power Sound Pack',cards:'Pulse Cards',comet:'Comet Trail',aurora:'Aurora Atmosphere',flameburst:'Inferno Burst',crystal:'Crystal UI',victory:'Victory Anthem',orbit:'Orbiting Diamonds',frost:'Frosted Missed Days',neonfont:'Neon Typography',shockwave:'Completion Shockwave'};
+function paintStore(){
+ document.querySelectorAll('.store-item').forEach(el=>{
+  const key=el.dataset.item,owned=data.storeOwned.includes(key),active=data.activeStoreEffect===key;
+  el.classList.toggle('owned',owned);const btn=el.querySelector('button');
+  if(btn){btn.textContent=owned?(active?'EQUIPPED ✓':'EQUIP'):(storeCosts[key]+' 💎');btn.dataset.buy=key}
+ });
+ $('storeBalance').textContent=data.diamonds;
+ $('collectionText').textContent=data.storeOwned.length?data.storeOwned.map(k=>storeNames[k]).join(' • '):'No extras unlocked yet. Pick an upgrade above.';
+ applyStoreEffects();
+}
+function applyStoreEffects(){
+ document.body.classList.toggle('glow-buttons',data.storeOwned.includes('glow'));
+ document.body.classList.toggle('sparkle-ui',data.storeOwned.includes('sparkle'));
+ document.body.classList.toggle('fire-ui',data.storeOwned.includes('fire'));
+ document.body.classList.toggle('aurora-ui',data.storeOwned.includes('aurora'));
+ document.body.classList.toggle('crystal-ui',data.storeOwned.includes('crystal'));
+ document.body.classList.toggle('neon-font-ui',data.storeOwned.includes('neonfont'));
+ document.body.classList.toggle('comet-ui',data.storeOwned.includes('comet'));
+ document.body.classList.toggle('frost-ui',data.storeOwned.includes('frost'));
+ document.body.classList.toggle('orbit-ui',data.storeOwned.includes('orbit'));
+ document.body.classList.toggle('shockwave-ui',data.storeOwned.includes('shockwave'));
+ $('brandLogo').classList.toggle('profile-frame',data.storeOwned.includes('frame'));
+ document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('pulse-card',data.storeOwned.includes('cards')));
+}
+$('storeItems').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-buy]');if(!btn)return;
+ const key=btn.dataset.buy;
+ if(data.storeOwned.includes(key)){
+  data.activeStoreEffect=key;applyStoreEffects();paintStore();save();playTone('milestone');return;
+ }
+ const cost=storeCosts[key];
+ if(data.diamonds<cost){$('collectionText').textContent='Not enough diamonds yet. Complete workouts to earn more.';playTone('tap');return}
+ data.diamonds-=cost;data.storeOwned.push(key);data.activeStoreEffect=key;save();
+ $('diamondCount').textContent=data.diamonds;paintStore();playTone('complete');
+});
+
+// Camera-based push-up counter using MediaPipe Pose.
+let poseModel=null,cameraStream=null,poseRunning=false,repPhase='needs-top',repTotal=0,lastRepAt=0,smoothedAngle=null,processing=false,lastFrameAt=0;
+const cv=$('poseCanvas'),cctx=cv.getContext('2d',{alpha:true}),video=$('counterVideo');
+function elbowAngle(a,b,c){
+ const ab=[a.x-b.x,a.y-b.y],cb=[c.x-b.x,c.y-b.y],dot=ab[0]*cb[0]+ab[1]*cb[1],mag=Math.hypot(...ab)*Math.hypot(...cb);
+ return Math.acos(Math.max(-1,Math.min(1,dot/(mag||1))))*180/Math.PI;
+}
+function drawPose(results){
+ const w=video.videoWidth||640,h=video.videoHeight||480;
+ if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
+ cctx.clearRect(0,0,w,h);
+ const lm=results.poseLandmarks;
+ if(!lm){$('counterStatus').textContent='Body not detected — adjust the camera so your side profile is visible.';smoothedAngle=null;return}
+ const pairs=[[11,13,15,23,25,27],[12,14,16,24,26,28]];
+ let best=null;
+ for(const p of pairs){
+  const [sh,el,wr,hip,knee,ank]=p,vis=Math.min(...p.map(i=>lm[i].visibility??0));
+  if(vis<.58)continue;
+  const angle=elbowAngle(lm[sh],lm[el],lm[wr]);
+  const alignment=Math.abs(lm[sh].y-lm[hip].y)+Math.abs(lm[hip].y-lm[ank].y);
+  const score=vis-(alignment*.08);
+  if(!best||score>best.score)best={sh,el,wr,hip,ank,angle,score,alignment};
+ }
+ if(!best){$('counterStatus').textContent='Move the phone farther back; keep one shoulder, elbow, wrist, hip and ankle visible.';smoothedAngle=null;return}
+ const ids=[best.sh,best.el,best.wr,best.hip,best.ank];
+ cctx.lineWidth=Math.max(3,w*.008);cctx.strokeStyle='#00ff78';cctx.shadowColor='#00ff78';cctx.shadowBlur=12;
+ cctx.beginPath();ids.forEach((id,i)=>{const pt=lm[id];if(i===0)cctx.moveTo(pt.x*w,pt.y*h);else cctx.lineTo(pt.x*w,pt.y*h)});cctx.stroke();cctx.shadowBlur=0;
+ ids.forEach(id=>{const pt=lm[id];cctx.beginPath();cctx.fillStyle='#d8ffe6';cctx.arc(pt.x*w,pt.y*h,Math.max(4,w*.009),0,Math.PI*2);cctx.fill()});
+ smoothedAngle=smoothedAngle===null?best.angle:(smoothedAngle*.68+best.angle*.32);
+ const angle=Math.round(smoothedAngle),aligned=best.alignment<.58;
+ $('counterStatus').textContent=`${aligned?'Tracking smoothly':'Keep your body in a straight line'} · arm angle ${angle}°`;
+ if(!aligned)return;
+ if(repPhase==='needs-top'){if(angle>150)repPhase='up';return}
+ if(repPhase==='up'&&angle<98)repPhase='down';
+ else if(repPhase==='down'&&angle>158&&Date.now()-lastRepAt>850){
+  repTotal++;lastRepAt=Date.now();repPhase='up';$('repCount').textContent=repTotal;playTone('rep');
+ }
+}
+$('openCounterBtn').onclick=()=>{
+ const panel=$('counterPanel');panel.classList.remove('hidden','counter-enter');void panel.offsetWidth;panel.classList.add('counter-enter');
+ panel.scrollIntoView({behavior:'smooth',block:'center'});playTone('milestone');
+};
+$('startCounterBtn').onclick=async()=>{
+ try{
+  if(!window.isSecureContext){$('counterStatus').textContent='Camera needs a secure HTTPS app address.';return}
+  if(!navigator.mediaDevices?.getUserMedia){$('counterStatus').textContent='Camera access is not supported by this browser.';return}
+  $('startCounterBtn').disabled=true;$('counterStatus').textContent='Starting camera and loading the pose model…';
+  cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:480},height:{ideal:360},frameRate:{ideal:24,max:30}},audio:false});
+  video.srcObject=cameraStream;await video.play();
+  if(!poseModel){
+   if(!window.Pose)throw new Error('Pose model did not load. Check your internet connection and reload.');
+   poseModel=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`});
+   poseModel.setOptions({modelComplexity:0,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.65,minTrackingConfidence:.65});
+   poseModel.onResults(drawPose);
+  }
+  poseRunning=true;repPhase='needs-top';smoothedAngle=null;processing=false;lastFrameAt=0;
+  $('counterStatus').textContent='Camera active — turn sideways and get into the top push-up position.';
+  const loop=async(now)=>{
+   if(!poseRunning)return;
+   if(!processing&&video.readyState>=2&&now-lastFrameAt>=65){
+    processing=true;lastFrameAt=now;
+    try{await poseModel.send({image:video})}catch(e){$('counterStatus').textContent='Tracking paused briefly — hold still and try again.'}
+    processing=false;
+   }
+   if(poseRunning)requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+ }catch(err){
+  stopCounter();
+  $('counterStatus').textContent=err.name==='NotAllowedError'?'Camera permission was denied. Allow camera access in your browser settings.':(err.message||'Could not start camera. Check permission and try again.');
+ }finally{$('startCounterBtn').disabled=false}
+};
+function stopCounter(){
+ poseRunning=false;processing=false;
+ if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop());
+ cameraStream=null;video.srcObject=null;cctx.clearRect(0,0,cv.width,cv.height);
+ $('counterStatus').textContent='Camera stopped.';
+}
+$('stopCounterBtn').onclick=()=>{stopCounter();playTone('tap')};
+$('resetCounterBtn').onclick=()=>{
+ repTotal=0;repPhase='needs-top';smoothedAngle=null;$('repCount').textContent='0';
+ $('counterStatus').textContent=poseRunning?'Count reset. Reach the top position to begin.':'Count reset.';
+ playTone('tap');
+};
+document.querySelector('main').classList.add('app-enter');
+syncMissed();applyTheme(data.theme||'purple');render();paintThemeChoices();paintStore();renderCalendar();
+</script>
+</body>
+</html>
