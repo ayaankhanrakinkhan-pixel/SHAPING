@@ -1,0 +1,19 @@
+{
+  "name": "SHAPING Fitness",
+  "short_name": "SHAPING",
+  "description": "Your 999-day fitness challenge",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090014",
+  "theme_color": "#6500b8",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
